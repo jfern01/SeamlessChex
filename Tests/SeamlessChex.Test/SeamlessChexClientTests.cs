@@ -12,7 +12,7 @@ namespace SeamlessChex.Test
         private readonly SeamlessChexClient client;
 
         public SeamlessChexClientTests() =>
-            this.client = new SeamlessChexClient("sk_test_01c67q9n1cry795whejtxg6f8n");
+            this.client = new SeamlessChexClient("sk_test_01en8e264mt148md2f8xkx6afs", false);
 
         public static IEnumerable<object[]> Data => new List<object[]>
         {
