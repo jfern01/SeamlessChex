@@ -7,7 +7,10 @@
   <PropertyGroup Label="Package">
     <Product>SeamlessChex</Product>
     <Description>SeamlessChex API client for .NET</Description>
-    <PackageTags>Tag1;Tag2;Tag3</PackageTags>
+    <PackageTags>seamlesschex,seamless</PackageTags>
+    <Authors>Jose Fernandez</Authors>
+    <Company>Fernandez Systems</Company>
+    <Copyright>Copyright © Jose Fernandez. All rights Reserved</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
