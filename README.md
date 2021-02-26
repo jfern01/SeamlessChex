@@ -8,3 +8,17 @@
 
 
 SeamlessChex API client for .NET
+
+
+## Usage
+
+### Dependency Injection
+```cs
+public virtual void ConfigureServices(IServiceCollection services) =>
+	services.AddSeamlessChex("api-key");
+```
+
+### DIY
+```cs
+var seamless = new SeamlessChexClient("api-key");
+```
