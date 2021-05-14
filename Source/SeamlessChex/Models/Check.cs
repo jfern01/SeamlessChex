@@ -19,6 +19,7 @@ namespace SeamlessChex.Models
         /// Gets or sets when eCheck was created.
         /// </summary>
         [JsonPropertyName("date")]
+        [JsonConverter(typeof(DateTimeOffsetConverter))]
         public DateTimeOffset Date { get; set; }
 
         /// <summary>
