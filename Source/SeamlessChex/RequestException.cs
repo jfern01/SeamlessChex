@@ -3,7 +3,7 @@ namespace SeamlessChex
     using System;
 
     /// <summary>
-    /// SeamlessChex request excpetion.
+    /// SeamlessChex base request exception.
     /// </summary>
     public class RequestException : Exception
     {

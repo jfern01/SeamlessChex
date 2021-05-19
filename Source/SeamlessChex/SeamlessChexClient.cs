@@ -1,6 +1,7 @@
 namespace SeamlessChex
 {
     using System;
+    using System.Net;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading;
@@ -75,6 +76,17 @@ namespace SeamlessChex
 
             if (!response.IsSuccessful)
             {
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    if (response.Data.Message.Equals("Fund Confirmation Limit Reached", StringComparison.Ordinal))
+                    {
+                        throw new FundConfirmationException();
+                    }
+
+                    // This *should* handle Basic Verification Limit Reached error
+                    throw new BasicVerificationException();
+                }
+
                 throw new RequestException(response.StatusDescription);
             }
 
