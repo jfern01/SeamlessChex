@@ -23,7 +23,7 @@ namespace SeamlessChex.Models
 
         /// <summary>
         /// Gets or sets the status of a funds confirmation.
-        /// See: https://developers.seamlesschex.com/seamlesschex/docs/#foundConfirmation.
+        /// See: https://developers.seamlesschex.com/seamlesschex/docs/#funds-confirmation.
         /// </summary>
         [JsonPropertyName("verification_fc")]
         public string Verification { get; set; }
