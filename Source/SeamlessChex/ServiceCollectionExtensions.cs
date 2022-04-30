@@ -18,7 +18,7 @@ namespace SeamlessChex
         /// <returns>Service collection.</returns>
         public static IServiceCollection AddSeamlessChex(this IServiceCollection services, string apiKey, bool live = true, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped)
         {
-            SeamlessChexClient Factory(IServiceProvider provider) => new SeamlessChexClient(apiKey, live);
+            SeamlessChexClient Factory(IServiceProvider provider) => new(apiKey, live);
 
             return serviceLifetime switch
             {

@@ -8,7 +8,7 @@ namespace SeamlessChex.Models
     public class UpdateCheckRequest : CreateCheckRequest
     {
         /// <summary>
-        /// Gets or sets the unique identifier for the eCheck object. 
+        /// Gets or sets the unique identifier for the eCheck object.
         /// </summary>
         [JsonPropertyName("check_id")]
         public string CheckId { get; set; }
