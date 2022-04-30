@@ -8,14 +8,14 @@ namespace SeamlessChex
     using System.Threading.Tasks;
     using RestSharp;
     using RestSharp.Authenticators;
-    using RestSharp.Serializers.SystemTextJson;
+    using RestSharp.Serializers.Json;
     using SeamlessChex.Converters;
     using SeamlessChex.Models;
 
     /// <summary>
     /// This is the client used to interact with the SeamlessChex API.
     /// </summary>
-    public class SeamlessChexClient
+    public class SeamlessChexClient : IDisposable
     {
         /// <summary>
         /// Live API base url.
@@ -27,7 +27,9 @@ namespace SeamlessChex
         /// </summary>
         public const string SandboxBaseUrl = "https://sandbox.seamlesschex.com/v1/";
 
-        private readonly IRestClient client;
+        private readonly RestClient client;
+
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SeamlessChexClient"/> class.
@@ -44,7 +46,6 @@ namespace SeamlessChex
             this.client = new RestClient(live ? LiveBaseUrl : SandboxBaseUrl)
             {
                 Authenticator = new JwtAuthenticator(apiKey),
-                ThrowOnAnyError = true,
             };
 
             var jsonSerializerOptions = new JsonSerializerOptions()
@@ -59,6 +60,14 @@ namespace SeamlessChex
             };
 
             _ = this.client.UseSystemTextJson(jsonSerializerOptions);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -99,30 +108,6 @@ namespace SeamlessChex
         }
 
         /// <summary>
-        /// Create check.
-        /// </summary>
-        /// <param name="checkRequest">Check object to create.</param>
-        /// <returns>Created check.</returns>
-        public Check CreateCheck(CreateCheckRequest checkRequest)
-        {
-            var request = new RestRequest("check/create").AddJsonBody(checkRequest);
-
-            var response = this.client.Post<CheckResponse>(request);
-
-            if (!response.IsSuccessful)
-            {
-                throw new RequestException(response.StatusDescription);
-            }
-
-            if (response.Data.Error)
-            {
-                throw new RequestException(response.Data.Message);
-            }
-
-            return response.Data.Check;
-        }
-
-        /// <summary>
         /// Update check.
         /// </summary>
         /// <param name="checkRequest">Check object to update.</param>
@@ -134,30 +119,6 @@ namespace SeamlessChex
 
             var response = await this.client.ExecutePostAsync<CheckResponse>(request, cancellationToken)
                 .ConfigureAwait(false);
-
-            if (!response.IsSuccessful)
-            {
-                throw new RequestException(response.StatusDescription);
-            }
-
-            if (response.Data.Error)
-            {
-                throw new RequestException(response.Data.Message);
-            }
-
-            return response.Data.Check;
-        }
-
-        /// <summary>
-        /// Update check.
-        /// </summary>
-        /// <param name="checkRequest">Check object to create.</param>
-        /// <returns>Created check.</returns>
-        public Check UpdateCheck(UpdateCheckRequest checkRequest)
-        {
-            var request = new RestRequest("check/edit").AddJsonBody(checkRequest);
-
-            var response = this.client.Post<CheckResponse>(request);
 
             if (!response.IsSuccessful)
             {
@@ -185,41 +146,11 @@ namespace SeamlessChex
                 throw new ArgumentNullException(nameof(checkId));
             }
 
-            var request = new RestRequest("check/{checkId}", DataFormat.Json)
+            var request = new RestRequest("check/{checkId}")
                 .AddUrlSegment("checkId", checkId);
 
             var response = await this.client.ExecuteGetAsync<CheckResponse>(request, cancellationToken)
                 .ConfigureAwait(false);
-
-            if (!response.IsSuccessful)
-            {
-                throw new RequestException(response.StatusDescription);
-            }
-
-            if (response.Data.Error)
-            {
-                throw new RequestException(response.Data.Message);
-            }
-
-            return response.Data.Check;
-        }
-
-        /// <summary>
-        /// Retrive check.
-        /// </summary>
-        /// <param name="checkId">Unique ID for the check to retrieve.</param>
-        /// <returns>Retrieved check.</returns>
-        public Check GetCheck(string checkId)
-        {
-            if (checkId == null)
-            {
-                throw new ArgumentNullException(nameof(checkId));
-            }
-
-            var request = new RestRequest("check/{checkId}", DataFormat.Json)
-                .AddUrlSegment("checkId", checkId);
-
-            var response = this.client.Get<CheckResponse>(request);
 
             if (!response.IsSuccessful)
             {
@@ -247,45 +178,11 @@ namespace SeamlessChex
                 throw new ArgumentNullException(nameof(checkId));
             }
 
-            var request = new RestRequest("check/{checkId}", DataFormat.Json)
+            var request = new RestRequest("check/{checkId}", Method.Delete)
                 .AddUrlSegment("checkId", checkId);
-
-            request.Method = Method.DELETE;
 
             var response = await this.client.ExecuteAsync<GenericResponse>(request, cancellationToken)
                 .ConfigureAwait(false);
-
-            if (!response.IsSuccessful)
-            {
-                throw new RequestException(response.StatusDescription);
-            }
-
-            if (response.Data.Error)
-            {
-                throw new RequestException(response.Data.Message);
-            }
-
-            return response.Data.Success;
-        }
-
-        /// <summary>
-        /// Void check.
-        /// </summary>
-        /// <param name="checkId">Unique ID for the check to retrieve.</param>
-        /// <returns>Wheter request was successful.</returns>
-        public bool VoidCheck(string checkId)
-        {
-            if (checkId == null)
-            {
-                throw new ArgumentNullException(nameof(checkId));
-            }
-
-            var request = new RestRequest("check/{checkId}", DataFormat.Json)
-                .AddUrlSegment("checkId", checkId);
-
-            request.Method = Method.DELETE;
-
-            var response = this.client.Delete<GenericResponse>(request);
 
             if (!response.IsSuccessful)
             {
@@ -313,7 +210,7 @@ namespace SeamlessChex
                 parameters = new GetChecksParameters();
             }
 
-            var request = new RestRequest("check/list", DataFormat.Json);
+            var request = new RestRequest("check/list");
 
             request = parameters.Apply(request);
 
@@ -334,34 +231,21 @@ namespace SeamlessChex
         }
 
         /// <summary>
-        /// Retrive checks.
+        /// Dispose resources.
         /// </summary>
-        /// <param name="parameters">Collection parameters.</param>
-        /// <returns>Retrieved checks.</returns>
-        public CheckCollection GetChecks(GetChecksParameters parameters = null)
+        /// <param name="disposing">Is disposing.</param>
+        protected virtual void Dispose(bool disposing)
         {
-            if (parameters == null)
+            if (!this.disposedValue)
             {
-                parameters = new GetChecksParameters();
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                this.client.Dispose();
+                this.disposedValue = true;
             }
-
-            var request = new RestRequest("check/list", DataFormat.Json);
-
-            request = parameters.Apply(request);
-
-            var response = this.client.Get<CheckCollectionResponse>(request);
-
-            if (!response.IsSuccessful)
-            {
-                throw new RequestException(response.StatusDescription);
-            }
-
-            if (response.Data.Error)
-            {
-                throw new RequestException(response.Data.Message);
-            }
-
-            return response.Data.List;
         }
     }
 }

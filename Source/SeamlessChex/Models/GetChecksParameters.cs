@@ -86,32 +86,32 @@ namespace SeamlessChex.Models
         {
             if (this.Limit.HasValue)
             {
-                _ = request.AddParameter("limit", this.Limit);
+                _ = request.AddQueryParameter("limit", this.Limit.ToString());
             }
 
             if (this.Page.HasValue)
             {
-                _ = request.AddParameter("page", this.Page);
+                _ = request.AddQueryParameter("page", this.Page.ToString());
             }
 
             if (this.Sort.HasValue)
             {
-                _ = request.AddParameter("sort", this.Sort.ToString().ToLowerInvariant());
+                _ = request.AddQueryParameter("sort", this.Sort.ToString().ToLowerInvariant());
             }
 
             if (this.Direction.HasValue)
             {
-                _ = request.AddParameter("direction", this.Direction.ToString().ToUpperInvariant());
+                _ = request.AddQueryParameter("direction", this.Direction.ToString().ToUpperInvariant());
             }
 
             if (!string.IsNullOrEmpty(this.Label))
             {
-                _ = request.AddParameter("label", this.Label);
+                _ = request.AddQueryParameter("label", this.Label);
             }
 
             if (!string.IsNullOrEmpty(this.LinkId))
             {
-                _ = request.AddParameter("link_id", this.LinkId);
+                _ = request.AddQueryParameter("link_id", this.LinkId);
             }
 
             return request;
